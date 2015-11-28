@@ -1,0 +1,98 @@
+- hosts: localhost
+  connection: local
+  gather_facts: yes
+  become: false
+  vars:
+    directories:
+      - ~/.sh
+      - ~/.sh/plugins
+      - ~/.vim
+      - ~/.vim/rc
+    common_packages:
+      - git
+      - vim
+      - zsh
+      - tmux
+      - curl
+      - tree
+      - nkf
+    dotfiles:
+      - bashrc
+      - zshrc
+      - sh/alias.sh
+      - sh/common.sh
+      - sh/common.zsh
+      - sh/fzf.sh
+      - vimrc
+      - vim/rc/neobundle.vim
+      - gitconfig
+      - tmux.conf
+    repositories:
+      - junegunn/fzf
+      - seebi/dircolors-solarized
+      - rupa/z
+      - Shougo/neobundle.vim
+  tasks:
+    - include_vars: "{{ansible_os_family}}.yml"
+
+    - name: be sure apt repository is updated
+      apt: update_cache=yes
+      become: yes
+      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+    - name: be sure common packages are installed
+      package: name={{item}} state=latest
+      become: "{{package_user}}"
+      with_items: common_packages
+
+    - name: be sure packages for os are installed
+      package: name={{item}} state=latest
+      become: "{{package_user}}"
+      with_items: packages_for_os
+
+    - name: be sure necessary directory exists
+      file: path={{item}} state=directory
+      with_items: directories
+
+    - name: be sure dotfiles are installed
+      template: "src=templates/{{item}}.j2 dest=~/.{{item}}"
+      with_items: dotfiles
+
+    - name: be sure env is loaded
+      shell: . ~/.sh/common.sh
+
+    # setup shell
+    - stat: path=~/bin/ghq
+      register: ghq
+
+    - name: be sure ghq is installed
+      shell: GOPATH=~/ go get github.com/motemen/ghq
+      when: not ghq.stat.exists
+
+    - name: be sure github repositories is downloaded
+      shell: ~/bin/ghq get {{item}} -u
+      with_items: repositories
+
+    - name: be sure symlink exists at ~/.fzf
+      file: src=~/src/github.com/junegunn/fzf dest=~/.fzf state=link
+
+    - name: be sure fzf is installed
+      shell: ~/.fzf/install
+
+    - name: be sure z is isntalled
+      file: src=~/src/github.com/rupa/z/z.sh dest=~/.sh/plugins/z.sh state=link
+
+    - name: be sure .dircolors exists
+      file: src=~/src/github.com/seebi/dircolors-solarized/dircolors.256dark dest=~/.dircolors state=link
+
+    # setup vim
+    - stat: path=~/.vim/bundle/neobundle.vim
+      register: neobundle
+
+    - name: be sure neobundle is installed
+      shell: ~/src/github.com/Shougo/neobundle.vim/bin/install.sh
+      when: not neobundle.stat.exists
+
+    - name: be sure neobundle plugins are installed
+      shell: ~/src/github.com/Shougo/neobundle.vim/bin/neoinstall
+      when: not neobundle.stat.exists
