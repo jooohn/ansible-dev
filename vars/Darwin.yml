@@ -1,3 +1,4 @@
+ls: gls
 package_user: false
 packages_for_os:
   - go

@@ -3,7 +3,7 @@ alias c='cd'
 alias d='cd'
 
 # eash ls
-alias ls='ls -G'
+alias ls='{{ ls }} --color=auto'
 alias l='ls'
 alias s='ls'
 alias sl='ls'
@@ -17,3 +17,8 @@ alias v='vim'
 
 # eash tmux
 alias t='tmux new-session -t 0 || tmux'
+
+# easy fzf
+alias ff='fzf-file'
+alias fd='fzf-directory'
+alias src='fzf-ghq-directory'

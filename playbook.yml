@@ -3,6 +3,7 @@
   gather_facts: yes
   become: false
   vars:
+    ls: ls
     directories:
       - ~/.sh
       - ~/.sh/plugins
@@ -16,6 +17,7 @@
       - curl
       - tree
       - nkf
+      - coreutils
     dotfiles:
       - bashrc
       - zshrc
@@ -83,7 +85,7 @@
       file: src=~/src/github.com/rupa/z/z.sh dest=~/.sh/plugins/z.sh state=link
 
     - name: be sure .dircolors exists
-      file: src=~/src/github.com/seebi/dircolors-solarized/dircolors.256dark dest=~/.dircolors state=link
+      file: src=~/src/github.com/seebi/dircolors-solarized/dircolors.ansi-universal dest=~/.dircolors state=link
 
     # setup vim
     - stat: path=~/.vim/bundle/neobundle.vim
