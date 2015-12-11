@@ -1,3 +1,6 @@
 package_user: yes
 packages_for_os:
   - golang
+  - libssl-dev
+  - libreadline-dev
+  - zlib1g-dev

@@ -28,13 +28,17 @@
       - vimrc
       - vim/rc/neobundle.vim
       - gitconfig
+      - gemrc
       - tmux.conf
     repositories:
       - junegunn/fzf
       - seebi/dircolors-solarized
       - rupa/z
       - Shougo/neobundle.vim
+      - sstephenson/rbenv
+      - sstephenson/ruby-build
   tasks:
+    - include_vars: main.yml
     - include_vars: "{{ansible_os_family}}.yml"
 
     - name: be sure apt repository is updated
@@ -98,3 +102,39 @@
     - name: be sure neobundle plugins are installed
       shell: ~/src/github.com/Shougo/neobundle.vim/bin/neoinstall
       when: not neobundle.stat.exists
+
+    # setup rbenv
+    - name: be sure symlink exists at ~/.rbenv
+      file: src=~/src/github.com/sstephenson/rbenv dest=~/.rbenv state=link
+
+    - name: be sure plugins directory at ~/.rbenv
+      file: path=~/.rbenv/plugins state=directory
+
+    - name: be sure symlink exists at ~/.rbenv/plugins/ruby-build
+      file: src=~/src/github.com/sstephenson/ruby-build dest=~/.rbenv/plugins/ruby-build state=link
+
+    - name: be sure rbenv is loaded
+      shell: . ~/.sh/common.sh
+
+    - name: has ruby already been installed?
+      shell: "rbenv versions | grep -q {{ ruby_version }}"
+      register: ruby_installed
+      failed_when: ruby_installed.rc not in [0, 1]
+
+    - name: be sure ruby is installed
+      shell: "CONFIGURE_OPtS='--disable-install-rdoc' rbenv install {{ ruby_version }}"
+      when: ruby_installed|failed
+
+    - name: be sure ruby version has been set
+      shell: "rbenv global {{ ruby_version }}"
+
+    - name: be sure gem-src is installed
+      shell: "gem install gem-src"
+
+    # - name: has bundler already been installed?
+    # - shell: "gem list | grep -q -e '^bundler\\s'"
+    # - register: bundler_installed
+    # - failed_when: bundler_installed.rc not in [0, 1]
+
+    - name: be sure bundler is installed
+      shell: "gem install bundler"

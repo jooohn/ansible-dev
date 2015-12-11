@@ -6,3 +6,8 @@ export GHQ_ROOT="${GOPATH}/src"
 
 export FZF_DEFAULT_COMMAND='ag -l -g ""'
 export FZF_DEFAULT_OPTS="--reverse --inline-info --ansi -1 -0 -m"
+
+if [ -d "$HOME/.rbenv" ]; then
+    export PATH="$HOME/.rbenv/bin:$PATH"
+    eval "$(rbenv init -)"
+fi
