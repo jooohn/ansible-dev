@@ -37,6 +37,7 @@
       - Shougo/neobundle.vim
       - sstephenson/rbenv
       - sstephenson/ruby-build
+      - creationix/nvm
   tasks:
     - include_vars: main.yml
     - include_vars: "{{ansible_os_family}}.yml"
@@ -63,9 +64,6 @@
     - name: be sure dotfiles are installed
       template: "src=templates/{{item}}.j2 dest=~/.{{item}}"
       with_items: dotfiles
-
-    - name: be sure env is loaded
-      shell: . ~/.sh/common.sh
 
     # setup shell
     - stat: path=~/bin/ghq
@@ -113,9 +111,6 @@
     - name: be sure symlink exists at ~/.rbenv/plugins/ruby-build
       file: src=~/src/github.com/sstephenson/ruby-build dest=~/.rbenv/plugins/ruby-build state=link
 
-    - name: be sure rbenv is loaded
-      shell: . ~/.sh/common.sh
-
     - name: has ruby already been installed?
       shell: "rbenv versions | grep -q {{ ruby_version }}"
       register: ruby_installed
@@ -129,12 +124,16 @@
       shell: "rbenv global {{ ruby_version }}"
 
     - name: be sure gem-src is installed
-      shell: "gem install gem-src"
-
-    # - name: has bundler already been installed?
-    # - shell: "gem list | grep -q -e '^bundler\\s'"
-    # - register: bundler_installed
-    # - failed_when: bundler_installed.rc not in [0, 1]
+      shell: "~/.rbenv/shims/gem install gem-src"
 
     - name: be sure bundler is installed
-      shell: "gem install bundler"
+      shell: "~/.rbenv/shims/gem install bundler"
+
+    # setup nvm
+    - git: repo=https://github.com/creationix/nvm.git dest=~/.nvm
+
+    - name: be sure node is installed
+      shell: ". ~/.nvm/nvm.sh && nvm install {{ node_version }}"
+
+    - name: be sure default node version is set
+      shell: ". ~/.nvm/nvm.sh && nvm alias default {{ node_version }}"
