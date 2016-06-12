@@ -23,13 +23,13 @@
       - zsh/alias.zsh
       - zsh/fzf.zsh
       - vimrc
-      - vim/rc/neobundle.vim
+      - vim/rc/dein.vim
       - gitconfig
       - tmux.conf
     repositories:
       - jooohn/prezto
       - junegunn/fzf
-      - Shougo/neobundle.vim
+      - Shougo/dein.vim
       - sstephenson/rbenv
       - sstephenson/ruby-build
       - creationix/nvm
@@ -92,16 +92,12 @@
       shell: ~/.fzf/install
 
     # setup vim
-    - stat: path=~/.vim/bundle/neobundle.vim
-      register: neobundle
+    - stat: path=~/.dein
+      register: dein
 
-    - name: be sure neobundle is installed
-      shell: ~/src/github.com/Shougo/neobundle.vim/bin/install.sh
-      when: not neobundle.stat.exists
-
-    - name: be sure neobundle plugins are installed
-      shell: ~/src/github.com/Shougo/neobundle.vim/bin/neoinstall
-      when: not neobundle.stat.exists
+    - name: be sure dein is installed
+      shell: ~/src/github.com/Shougo/dein.vim/bin/install.sh ~/.dein
+      when: not dein.stat.exists
 
     # setup rbenv
     - name: be sure symlink exists at ~/.rbenv
