@@ -26,9 +26,16 @@ call dein#add('jiangmiao/auto-pairs')
 " utility library
 call dein#add('vim-scripts/L9')
 
+" gtags
+call dein#add('vim-scripts/gtags.vim')
+
 " filer
 call dein#add('vim-scripts/FuzzyFinder')
 
 call dein#end()
+
+if dein#check_install()
+  call dein#install()
+endif
 
 filetype plugin indent on

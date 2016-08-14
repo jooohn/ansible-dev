@@ -77,6 +77,15 @@ syntax enable
 set background=dark
 colorscheme solarized
 
+" Gtags
+nnoremap <silent> gt :Gtags
+nnoremap <silent> gd :GtagsCursor<CR>
+
+" Completion
+nnoremap <silent> <C-n> :cn<CR>
+nnoremap <silent> <C-p> :cp<CR>
+nnoremap <silent> <C-c> :ccl<CR>
+
 " Open git managed file in horizontal split
 nnoremap <silent> gj :call fzf#run({
 \   'source': "git ls-files",
@@ -89,3 +98,10 @@ nnoremap <silent> fb :FufBuffer<CR>
 nnoremap <silent> fl :FufLine<CR>
 nnoremap <silent> fub :FufBookmarkDir<CR>
 nnoremap <silent> fua :FufBookmarkDirAdd<CR>
+
+let g:quickrun_config = {
+      \   "cpp": {
+      \     "command": "clang++",
+      \     "cmdopt": "-std=c++11"
+      \   }
+      \ }
